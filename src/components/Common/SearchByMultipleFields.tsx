@@ -30,10 +30,16 @@ import { isAppleDevice } from "@/Utils/utils";
 
 interface SearchOption {
   key: string;
-  type: "text" | "phone";
+  type: "text" | "phone" | "custom"; // Add "custom" type
   placeholder: string;
   value: string;
-  component?: React.ComponentType<HTMLDivElement>;
+  renderField?: ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+  }) => React.ReactNode;
 }
 
 interface SearchByMultipleFieldsProps {
@@ -185,6 +191,13 @@ const SearchByMultipleFields: React.FC<SearchByMultipleFieldsProps> = ({
 
   const renderSearchInput = useMemo(() => {
     switch (selectedOption.type) {
+      case "custom":
+        return selectedOption.renderField
+          ? selectedOption.renderField({
+              value: searchValue,
+              onChange: (value) => setSearchValue(value),
+            })
+          : null;
       case "phone":
         return (
           <div className="relative">
